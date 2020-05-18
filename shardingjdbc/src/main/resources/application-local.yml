@@ -1,0 +1,41 @@
+
+#spring:
+  #datasource:
+  #  url: jdbc:mysql://10.231.55.205:3306/sharding?useSSL=false&allowPublicKeyRetrieval=true&allowMultiQueries=true
+  #  username: root
+    #  password: secret
+  #  password: root
+   # driverClassName: com.mysql.cj.jdbc.Driver
+dataSources:
+  ds0: !!org.apache.commons.dbcp.BasicDataSource
+    url: jdbc:mysql://localhost:3306/ds0
+    driverClassName: com.mysql.jdbc.Driver
+    username: root
+    password:
+  ds1: !!org.apache.commons.dbcp.BasicDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ds1
+    username: root
+    password:
+shardingRule:
+  tables:
+    student:
+      actualDataNodes: sharding${0}.student${0..1}
+      tableStrategy:
+        inline:
+          shardingColumn: daily
+          algorithmExpression: student${daily % 100}
+      keyGenerator:
+        type: SNOWFLAKE
+        column: daily
+  bindingTables:
+    - student
+
+  defaultDataSourceName: sharding
+  defaultTableStrategy:
+    none:
+  defaultKeyGenerator:
+    type: SNOWFLAKE
+    column: daily
+props:
+  sql.show: true
